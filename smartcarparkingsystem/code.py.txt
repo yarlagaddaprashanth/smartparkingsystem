@@ -1,0 +1,104 @@
+class Gate:
+    def __init__(self):
+        self.is_open = False
+
+    def open_gate(self):
+        if not self.is_open:
+            self.is_open = True
+            print("Gate is opening...")
+
+    def close_gate(self):
+        if self.is_open:
+            self.is_open = False
+            print("Gate is closing...")
+
+class ParkingSpot:
+    def __init__(self, spot_id):
+        self.spot_id = spot_id
+        self.is_available = True
+        self.vehicle = None
+
+    def park_vehicle(self, vehicle):
+        if self.is_available:
+            self.vehicle = vehicle
+            self.is_available = False
+            print(f"Vehicle {vehicle} is parked at spot {self.spot_id}.")
+        else:
+            print(f"Spot {self.spot_id} is occupied.")
+
+    def remove_vehicle(self):
+        if not self.is_available:
+            print(f"Vehicle {self.vehicle} is leaving spot {self.spot_id}.")
+            self.vehicle = None
+            self.is_available = True
+        else:
+            print(f"Spot {self.spot_id} is already empty.")
+
+class ParkingLot:
+    def __init__(self, total_spots):
+        self.total_spots = total_spots
+        self.available_spots = total_spots
+        self.spots = [ParkingSpot(i + 1) for i in range(total_spots)]
+        self.gate = Gate()
+
+    def scan_vehicle(self, vehicle):
+        # Simulate car scanning process
+        print(f"Scanning vehicle {vehicle}...")
+
+    def check_availability(self):
+        return self.available_spots > 0
+
+    def park(self, vehicle):
+        self.scan_vehicle(vehicle)
+        
+        if self.check_availability():
+            print(f"Available spots: {self.available_spots}")
+            self.gate.open_gate()
+
+            for spot in self.spots:
+                if spot.is_available:
+                    spot.park_vehicle(vehicle)
+                    self.available_spots -= 1  # Decrease available spots
+                    self.gate.close_gate()
+                    return
+        else:
+            print("Parking lot is full. No available spots.")
+            self.gate.close_gate()
+
+    def remove(self, vehicle):
+        for spot in self.spots:
+            if spot.vehicle == vehicle:
+                spot.remove_vehicle()
+                self.available_spots += 1  # Increase available spots
+                print(f"Available spots after exit: {self.available_spots}")
+                return
+        print(f"Vehicle {vehicle} not found in the parking lot.")
+
+    def display_status(self):
+        for spot in self.spots:
+            status = "Available" if spot.is_available else f"Occupied by {spot.vehicle}"
+            print(f"Spot {spot.spot_id}: {status}")
+
+# Example Usage:
+total_spaces = int(input("Enter the number of parking spaces: "))  # User enters total spaces initially
+parking_lot = ParkingLot(total_spaces)
+
+# Simulate cars entering the parking lot
+parking_lot.park("Car1")
+parking_lot.park("Car2")
+
+# Display the current status of the parking lot
+parking_lot.display_status()
+
+# Remove a car and check space availability
+parking_lot.remove("Car1")
+
+# Display the current status of the parking lot
+parking_lot.display_status()
+
+# Park more cars and check the status
+parking_lot.park("Car3")
+parking_lot.park("Car4")
+
+# Display the final status of the parking lot
+parking_lot.display_status()
